@@ -1,2 +1,2 @@
 #Javascript Calculator
-Basic Javascript calculator with history
+Javascript calculator with history inspired by [SpeedCrunch](http://speedcrunch.org)
