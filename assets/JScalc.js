@@ -1,7 +1,3 @@
-//TODO
-//Scroll through history
-//Flash input field on incorrect expression
-
 window.onload = function(){
     var buttons = {"slash":"/", "sqrt":"sqrt(", "log":"log(", "exp":"exp(", "mult":"*", "e":"E", "pow":"pow(", "sin":"sin(",
                   "minus":"-", "openBracket": "(", "closeBracket":")", "cos": "cos(", "dot":".", "plus":"+", "mod":"%",
@@ -33,6 +29,7 @@ window.onload = function(){
         while (historyEntry[0]){
             historyEntry[0].parentNode.removeChild(historyEntry[0]);
         }
+        document.getElementById("history").style.height = "1px"; // Reset history log
     });
     document.getElementById("memPlus").addEventListener("click", function(){// Add to memory on "M+" pressed
         memory += mathEval(inputField.value);
@@ -47,10 +44,6 @@ window.onload = function(){
         memory = 0;
     });
     addEvent(window, "resize", setHistoryHeight);// Reset history window height on resize
-    for (var i=0;i<14;i++){
-        addHistoryEntry(''+i,''+i);
-    }
-    
 }
 
 function addHistoryEntry(expression, result){
@@ -96,33 +89,20 @@ function setHistoryHeight(){
         windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         calcHeight = document.getElementById("calc").clientHeight,
         history = document.getElementById("history");
-    console.log("wind, wrap, calc", windowHeight, wrapHeight, calcHeight);
-    if (windowHeight > 500){
-        if (wrapHeight > windowHeight) {
-            history.style.height = windowHeight - calcHeight - 140 + "px";
-        }
-        else if (wrapHeight < windowHeight && history.clientHeight < history.scrollHeight){
-            if (history.scrollHeight < windowHeight - calcHeight - 140) {
-                history.style.height = history.scrollHeight + "px";
-            } else {
-                history.style.height = windowHeight - calcHeight - 140 + "px";
-            }
-        }
-    } else {
-        if (wrapHeight > windowHeight){
-            history.style.height = windowHeight - calcHeight - 35 + "px";
-        }
-        else if (wrapHeight < windowHeight && history.clientHeight < history.scrollHeight){
-            if (history.scrollHeight < windowHeight - calcHeight - 35) {
-                history.style.height = history.scrollHeight + "px";
-            } else {
-                history.style.height = windowHeight - calcHeight - 35 + "px";
-            }
-        }
+    if (windowHeight > 500) // Accounting for margins, Gotta fixit sometime somehow
+        calcHeight += 140;
+    else
+        calcHeight += 35;
+    if (wrapHeight > windowHeight){ // Collapse on overflow
+        history.style.height = windowHeight - calcHeight + "px";
+    } else if (history.scrollHeight < windowHeight - calcHeight) {// Expand scroll if there is space
+        history.style.height = history.scrollHeight + "px";
+    } else { // Occupy all available height
+        history.style.height = windowHeight - calcHeight + "px";
     }
-    
-    console.log("hist.client scroll", history.clientHeight, history.scrollHeight);
+    history.scrollTop = history.scrollHeight; //Scroll to the bottom of the history when element added
 }
+
 function enterPressed(event) {
     if (event.keyCode === 13) {//Enter pressed
         inputField.value = mathEval(inputField.value);
