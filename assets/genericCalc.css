@@ -45,8 +45,7 @@ body .navbar-fixed-bottom{
 .expression:hover, .result:hover{
     color: #15F;
 }
-#history {
-    
+#history {    
     overflow-y: scroll;
 }
 @media (max-height: 500px){

@@ -46,7 +46,10 @@ window.onload = function(){
     document.getElementById("mem").addEventListener("dblclick", function(){// Erase memory on "MRC" double click
         memory = 0;
     });
+    addEvent(window, "resize", setHistoryHeight);// Reset history window height on resize
+    
 }
+
 function addHistoryEntry(expression, result){
     var historyEntry,
         entryTemplate = document.getElementById("historyTemplate");
@@ -71,8 +74,46 @@ function addHistoryEntry(expression, result){
     historyEntry.appendChild(document.createTextNode(" = "))
     historyEntry.appendChild(resSpan);
     entryTemplate.parentNode.insertBefore(historyEntry, entryTemplate);
+    setHistoryHeight();// Check if history window needs to be scrollable
 }
+var addEvent = function(object, type, callback) {
+    // Since overriding window.onsize is a bad practice, use function addEvent
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
 
+function setHistoryHeight(){
+    var calcHeight = document.getElementById("calculator").offsetHeight,
+        windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+        remainingHeight = windowHeight - calcHeight - 40,// Get remaining height of viewport
+        history = document.getElementById("history");
+    console.log("wind, calc", windowHeight, calcHeight);
+    console.log("hist.client scroll", history.clientHeight, history.scrollHeight);
+    if (windowHeight > 500) {
+        remainingHeight -= 100;// Compensate for the margin of calc
+        if (history.clientHeight + calcHeight + 100 < windowHeight){
+        history.style.height = windowHeight - calcHeight+"px";
+    }
+    }
+    if (windowHeight < 500){
+        if (history.scrollHeight + calcHeight + 10 < windowHeight){
+        history.style.height = history.scrollHeight + "px";
+    }
+    }
+    
+    if (history.scrollHeight + calcHeight + 100 < windowHeight){
+        history.style.height = history.scrollHeight + "px";
+    }
+    if (remainingHeight < history.clientHeight){
+        history.style.height = remainingHeight+"px";
+    }
+}
 function enterPressed(event) {
     if (event.keyCode === 13) {//Enter pressed
         inputField.value = mathEval(inputField.value);
