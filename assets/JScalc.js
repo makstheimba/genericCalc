@@ -1,3 +1,7 @@
+//TODO
+//Scroll through history
+//Flash input field on incorrect expression
+
 window.onload = function(){
     var buttons = {"slash":"/", "sqrt":"sqrt(", "log":"log(", "exp":"exp(", "mult":"*", "e":"E", "pow":"pow(", "sin":"sin(",
                   "minus":"-", "openBracket": "(", "closeBracket":")", "cos": "cos(", "dot":".", "plus":"+", "mod":"%",
@@ -95,8 +99,10 @@ function mathEval (exp) {
     if (!valid)
         return virginExp;
     else
-        try { 
+        try {
             value = eval(exp);
+            if (virginExp === "" + value)
+                return virginExp;
             addHistoryEntry(exp, value);
             return value;
         } catch (e) {return virginExp};
