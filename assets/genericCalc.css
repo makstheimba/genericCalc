@@ -8,7 +8,7 @@ span{
     cursor: pointer;    
 }
 body .navbar-fixed-bottom{
-    margin-bottom: 100px;
+    padding-bottom: 100px;
 }
 .row .btn {
     border: 1px solid peachpuff;
@@ -50,6 +50,6 @@ body .navbar-fixed-bottom{
 }
 @media (max-height: 500px){
     body .navbar-fixed-bottom{
-    margin-bottom: 10px;
+    padding-bottom: 10px;
     }
 }

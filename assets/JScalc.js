@@ -47,6 +47,9 @@ window.onload = function(){
         memory = 0;
     });
     addEvent(window, "resize", setHistoryHeight);// Reset history window height on resize
+    for (var i=0;i<14;i++){
+        addHistoryEntry(''+i,''+i);
+    }
     
 }
 
@@ -89,30 +92,36 @@ var addEvent = function(object, type, callback) {
 };
 
 function setHistoryHeight(){
-    var calcHeight = document.getElementById("calculator").offsetHeight,
+    var wrapHeight = document.getElementById("wrap").offsetHeight,
         windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-        remainingHeight = windowHeight - calcHeight - 40,// Get remaining height of viewport
+        calcHeight = document.getElementById("calc").clientHeight,
         history = document.getElementById("history");
-    console.log("wind, calc", windowHeight, calcHeight);
-    console.log("hist.client scroll", history.clientHeight, history.scrollHeight);
-    if (windowHeight > 500) {
-        remainingHeight -= 100;// Compensate for the margin of calc
-        if (history.clientHeight + calcHeight + 100 < windowHeight){
-        history.style.height = windowHeight - calcHeight+"px";
-    }
-    }
-    if (windowHeight < 500){
-        if (history.scrollHeight + calcHeight + 10 < windowHeight){
-        history.style.height = history.scrollHeight + "px";
-    }
+    console.log("wind, wrap, calc", windowHeight, wrapHeight, calcHeight);
+    if (windowHeight > 500){
+        if (wrapHeight > windowHeight) {
+            history.style.height = windowHeight - calcHeight - 140 + "px";
+        }
+        else if (wrapHeight < windowHeight && history.clientHeight < history.scrollHeight){
+            if (history.scrollHeight < windowHeight - calcHeight - 140) {
+                history.style.height = history.scrollHeight + "px";
+            } else {
+                history.style.height = windowHeight - calcHeight - 140 + "px";
+            }
+        }
+    } else {
+        if (wrapHeight > windowHeight){
+            history.style.height = windowHeight - calcHeight - 35 + "px";
+        }
+        else if (wrapHeight < windowHeight && history.clientHeight < history.scrollHeight){
+            if (history.scrollHeight < windowHeight - calcHeight - 35) {
+                history.style.height = history.scrollHeight + "px";
+            } else {
+                history.style.height = windowHeight - calcHeight - 35 + "px";
+            }
+        }
     }
     
-    if (history.scrollHeight + calcHeight + 100 < windowHeight){
-        history.style.height = history.scrollHeight + "px";
-    }
-    if (remainingHeight < history.clientHeight){
-        history.style.height = remainingHeight+"px";
-    }
+    console.log("hist.client scroll", history.clientHeight, history.scrollHeight);
 }
 function enterPressed(event) {
     if (event.keyCode === 13) {//Enter pressed
