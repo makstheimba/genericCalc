@@ -5,9 +5,9 @@ window.onload = function(){
         inputField = document.getElementById("inputField"),
         memory = 0;
     document.body.addEventListener("keydown", function(event){// Focus on input field whenever key is pressed
-       inputField.focus(); 
+       inputField.focus();
     });
-    inputField.addEventListener("keyup", function(event){// Evaluate expression if enter pressed
+    inputField.addEventListener("keyup", function(event){// Evaluate expression if enter pressed        
         if (event.keyCode === 13) {
             inputField.value = mathEval(inputField.value);
         }
@@ -24,6 +24,12 @@ window.onload = function(){
     document.getElementById("del").addEventListener("click", function(){// Clear input field on "C" pressed
         inputField.value = "";
     });
+    document.getElementById("del").addEventListener("dblclick", function(){// Clear history on "C" double click
+        var historyEntry = document.getElementsByClassName("historyEntry");
+        while (historyEntry[0]){
+            historyEntry[0].parentNode.removeChild(historyEntry[0]);
+        }
+    });
     document.getElementById("memPlus").addEventListener("click", function(){// Add to memory on "M+" pressed
         memory += mathEval(inputField.value);
     });
@@ -37,6 +43,31 @@ window.onload = function(){
         memory = 0;
     });
 }
+function addHistoryEntry(expression, result){
+    var historyEntry,
+        entryTemplate = document.getElementById("historyTemplate");
+        expSpan = document.createElement("span"),
+        resSpan = document.createElement("span");
+    // Setting up spans for expression and result
+    expSpan.innerHTML = expression;
+    expSpan.className = "expression";
+    resSpan.innerHTML = result;
+    resSpan.className = "result";
+    expSpan.addEventListener("dblclick", function(){
+        document.getElementById("inputField").value = this.innerHTML;
+    })
+    resSpan.addEventListener("dblclick", function(){
+        document.getElementById("inputField").value = this.innerHTML;
+    })
+    // Add history entry for expression and result
+    historyEntry = entryTemplate.cloneNode();
+    historyEntry.removeAttribute("id");
+    historyEntry.className += " historyEntry";
+    historyEntry.appendChild(expSpan);
+    historyEntry.appendChild(document.createTextNode(" = "))
+    historyEntry.appendChild(resSpan);
+    entryTemplate.parentNode.insertBefore(historyEntry, entryTemplate);
+}
 
 function enterPressed(event) {
     if (event.keyCode === 13) {//Enter pressed
@@ -46,7 +77,9 @@ function enterPressed(event) {
 
 function mathEval (exp) {
     var reg = /(?:[a-z$_][a-z0-9$_]*)|(?:[;={}\[\]"'!&<>^\\?:])/ig,
-        valid = true;
+        valid = true,
+        value = 0,
+        virginExp = exp;
 
     // Detect valid JS identifier names and replace them
     exp = exp.replace(reg, function ($0) {
@@ -57,10 +90,14 @@ function mathEval (exp) {
         else
             valid = false;
     });
-
+    
     // Don't eval if our replace function flagged as invalid
     if (!valid)
-        alert("Invalid arithmetic expression");
+        return virginExp;
     else
-        try { return eval(exp); } catch (e) { alert("Invalid arithmetic expression"); };
+        try { 
+            value = eval(exp);
+            addHistoryEntry(exp, value);
+            return value;
+        } catch (e) {return virginExp};
 }
